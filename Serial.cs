@@ -18,7 +18,6 @@ namespace Serial
 
         static bool _continue = true;
         static SerialPort _serialPort = new SerialPort();
-        private delegate void SetTextDeleg(string text);
 
         public Form1()
         {
@@ -42,7 +41,7 @@ namespace Serial
             
             // Allow the user to set the appropriate properties.
             _serialPort.PortName = "COM3";
-            _serialPort.BaudRate = 19200;
+            _serialPort.BaudRate = 9600;
             _serialPort.Parity = 0;
             _serialPort.DataBits = 8;
 
@@ -54,7 +53,6 @@ namespace Serial
 
             while (_continue)
             {
-                //Console.Write("Insira o comando AT aqui: ");
                 name = Console.ReadLine();
                 if(stringComparer.Equals("sair", name)) _continue = false;              
 
@@ -65,7 +63,6 @@ namespace Serial
                 }
                 
                 _serialPort.Write(name);
-                //Console.WriteLine("Type QUIT to exit");
             }
 
             t.Join();
@@ -74,9 +71,7 @@ namespace Serial
 
         public void Read()
         {
-            
             Form1 objeto = new Form1();
-            //TextWriter tw = new StreamWriter("data.txt");
             byte[] buffer = new byte[1];
             int value;
 
@@ -85,26 +80,19 @@ namespace Serial
                 try
                 {
                     value = _serialPort.Read(buffer, 0, 1);
-
-                    string text = BitConverter.ToString(buffer);
-                    this.BeginInvoke(new SetTextDeleg(si_DataReceived), new object[] { text });
-                                        
-                    /*foreach (byte qnt in buffer)
-                    {
-                        string valor = Convert.ToString(qnt,10);
+                    string va = ASCIIEncoding.ASCII.GetString(buffer);
+                        
                         this.textBox1.Invoke(new Action(() =>
                         {
-                            this.textBox1.AppendText(buffer + " ");
+                            this.textBox1.AppendText(va + " ");
                         }));
-                        //tw.Write(valor + " ");
-                    }*/
+
                 }
                 
                 catch (TimeoutException) { }
             }
-            //tw.Close();
         }
-        private void si_DataReceived(string data) { textBox1.Text = data.Trim(); }
+
     }
 
 }
